@@ -26,11 +26,19 @@ const nextConfig = {
   },
 
   // Your Next.js config here
-  webpack: (webpackConfig: any) => {
+  webpack: (webpackConfig: any, { isServer }) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
       '.js': ['.ts', '.tsx', '.js', '.jsx'],
       '.mjs': ['.mts', '.mjs'],
+    }
+
+    // Fixes the OpenNext missing default export shim crash for @next/env inside Payload
+    if (isServer) {
+      webpackConfig.resolve.alias = {
+        ...webpackConfig.resolve.alias,
+        '@next/env': require.resolve('@next/env'),
+      }
     }
 
     return webpackConfig
